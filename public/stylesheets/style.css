@@ -1,0 +1,17 @@
+:root {
+  --color-primary-light: #FF204E;
+  --color-primary: #A0153E;
+  --color-primary-dark: #5D0E41;
+  --color-secondary: #00224D;
+}
+
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: var(--color-secondary);
+  color: whitesmoke;
+}
+
+a {
+  color: #00B7FF;
+}

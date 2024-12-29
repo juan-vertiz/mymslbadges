@@ -1,0 +1,11 @@
+{% extends 'layout.njk' %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="/stylesheets/404.css">
+{% endblock %}
+
+{% block content %}
+<h2>404</h2>
+<p>We are sorry, but the page you requested was not found</p>
+{% endblock %}
