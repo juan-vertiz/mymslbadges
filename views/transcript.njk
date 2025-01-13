@@ -1,0 +1,19 @@
+<div style="background-color: #00224D; color: whitesmoke; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 16px; color: white; padding: 24px;">
+    <h3 style="font-size: 48px; text-align: center; margin: 0;">My MSL Transcript: {{ userName }}</h3>
+    <div style="display: flex; flex-direction: row; font-size: 32px; justify-content: space-around; width: 100%; color: #94a3b8;">
+        <p style="margin: 0;">Modules completed: {{ totalModulesCompleted }}</p>
+        <p style="margin: 0;">Training time: {{ (totalTrainingMinutes // 60) }} hr {{ (totalTrainingMinutes % 60) }} min</p>
+    </div>
+    <div style="display: flex; width: 100%; margin: 8px 0; border-bottom: 1px solid #94a3b8;"></div>
+    <div style="display: flex; width: 100%; flex-flow: row wrap; justify-content: flex-start; align-items: center; gap: 16px;">
+        {% for module in latestModules %}
+        <div style="display: flex; flex: 0 0 45%; gap: 16px; align-items: center;">
+            <img src="{{ module.base64Icon }}" width="96px" height="96px">
+            <div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; text-wrap-style: balance; max-width: 80%;">
+                <p style="margin: 0; font-size: 28px;">{{ module.title }}</p>
+                <p style="margin: 0; font-size: 24px; color: #cbd5e1">Duration: {{ (module.durationInMinutes // 60) }} hr {{ (module.durationInMinutes % 60) }} min</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
