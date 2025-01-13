@@ -31,8 +31,8 @@ router.get('/transcript/:transcriptId', async function(req, res, next) {
   const rendered = env.render('transcript.njk', data);
   const reactObject = await html(rendered.replace(/(\r?\n|\r)\s*/g, ''));
   const svg = await satori(reactObject, {
-    width: 1024,
-    height: 400,
+    width: 1200,
+    height: 630,
     fonts: [
       {
         name: 'Open Sans',
