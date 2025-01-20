@@ -30,6 +30,12 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 /**
+ * Listen for SIGINT and SIGTERM signals.
+ */
+process.once('SIGINT', shutdown);
+process.once('SIGTERM', shutdown);
+
+/**
  * Normalize a port into a number, string, or false.
  */
 
@@ -87,4 +93,35 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  console.log('Listening on ' + bind);
 }
+
+/**
+ * Event listener for SIGINT event.
+ */
+let shuttingDown = false;
+
+function shutdown() {
+  if (!shuttingDown) {
+    shuttingDown = true;
+    console.log('Received SIGINT. Shutting down...');
+    server.close((err) => {
+      if (err) {
+        console.error(err);
+        process.exitCode = 1;
+      }
+      console.log('Server has been shut down. Exiting process...');
+      process.exit();
+    });
+  }
+}
+
+/**
+ * Middleware to close connections when shutting down.
+ */
+app.use(function(req, res, next) {
+  if (shuttingDown) {
+    res.set('Connection', 'close');
+  }
+  next();
+});
