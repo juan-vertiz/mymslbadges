@@ -13,7 +13,7 @@ const fontData = fs.readFileSync(
 );
 
 var transcriptRouter = require('./routes/transcript');
-var healthcheckRouter = require('./routes/healthcheck');
+var healthRouter = require('./routes/health');
 
 var app = express();
 
@@ -32,7 +32,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/transcript', transcriptRouter);
-app.use('/healthcheck', healthcheckRouter);
+app.use('/health', healthRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -10,6 +10,6 @@ COPY . .
 
 EXPOSE 3000
 
-HEALTHCHECK CMD curl --fail http://localhost:3000 || exit 1
+HEALTHCHECK CMD curl --fail http://localhost:3000/health || exit 1
 
 CMD ["node", "./bin/www"]
