@@ -15,7 +15,7 @@ const fontData = fs.readFileSync(
   path.join(__dirname, '..', 'assets', 'fonts', 'OpenSans-Regular.ttf')
 );
 
-router.get('/transcript/:transcriptId', async function(req, res, next) {
+router.get('/:transcriptId', async function(req, res, next) {
   var transcript = await msl.fetch_transcript(req.params.transcriptId);
   var latestModules = transcript['modulesCompleted'].slice(0, 6);
   for (const completedModule of latestModules) {
