@@ -12,7 +12,8 @@ const fontData = fs.readFileSync(
   path.join(__dirname, 'assets', 'fonts', 'OpenSans-Regular.ttf')
 );
 
-var indexRouter = require('./routes/index');
+var transcriptRouter = require('./routes/transcript');
+var healthRouter = require('./routes/health');
 
 var app = express();
 
@@ -30,7 +31,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+app.use('/transcript', transcriptRouter);
+app.use('/health', healthRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
