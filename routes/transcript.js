@@ -16,7 +16,25 @@ const fontData = fs.readFileSync(
 );
 
 router.get('/:transcriptId', async function(req, res, next) {
-  var transcript = await msl.fetch_transcript(req.params.transcriptId);
+  try {
+    var transcript = await msl.fetch_transcript(req.params.transcriptId);
+  } catch (e) {
+    const rendered = nunjucks.render('error.njk');
+    const reactObject = await html(rendered.replace(/(\r?\n|\r)\s*/g, ''));
+    const svg = await satori(reactObject, {
+      width: 400,
+      height: 200,
+      fonts: [
+        {
+          name: 'Open Sans',
+          data: fontData,
+          style: 'normal'
+        }
+      ]
+    });
+    res.setHeader('Content-Type', 'image/svg+xml');
+    return res.send(svg);
+  }
   var latestModules = transcript['modulesCompleted'].slice(0, 6);
   for (const completedModule of latestModules) {
     const module = await msl.fetch_module(completedModule['uid']);

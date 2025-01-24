@@ -15,12 +15,8 @@ module.exports = class LearnAPI {
             });
             return response.data;
         } catch (error) {
-            console.error(error);
-            return {
-                'code': error.code,
-                'status': error.status,
-                'message': error.message,
-            };
+            console.error(`${error.message} | transcript_id = ${transcript_id}`);
+            throw error;
         }
     }
 
@@ -33,12 +29,8 @@ module.exports = class LearnAPI {
             });
             return response.data;
         } catch (error) {
-            console.error(error);
-            return {
-                'code': error.code,
-                'status': error.status,
-                'message': error.message,
-            };
+            console.error(`${error.message} | module_uid = ${module_uid}`);
+            throw error;
         }
     }
 }
