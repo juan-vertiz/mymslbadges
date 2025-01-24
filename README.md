@@ -2,6 +2,8 @@
 
 Lightweight, single-endpoint API that generates a dynamic, visually appealing image summarizing real-time statistics from a specified Microsoft Learn profile. The generated image is perfect for embedding in your GitHub profile README, turning it into a live showcase of your learning achievements.
 
+![My MSL Transcript](https://mymsltranscript.bajatta.com/transcript/d46gh5zermp0no7)
+
 ### Purpose
 
 Microsoft Learn offers a fantastic platform for skill development and certification. **My Microsoft Learn Transcript** takes your progress a step further by enabling you to display real-time stats directly in your GitHub profile README.
