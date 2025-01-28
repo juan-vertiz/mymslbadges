@@ -1,37 +1,15 @@
 const express = require('express');
-const nunjucks = require('nunjucks');
-const path = require('path');
-const satori = require('satori').default;
-const fs = require('fs');
 const LearnAPI = require('../services/learn');
-const html = (...args) => import('satori-html').then(({ html }) => html(...args));
+const ogGenerator = require('../services/og-generator');
 
 const router = express.Router();
 const msl = new LearnAPI();
-
-const env = nunjucks.configure(path.join(__dirname, '..', 'views'));
-
-const fontData = fs.readFileSync(
-  path.join(__dirname, '..', 'assets', 'fonts', 'OpenSans-Regular.ttf')
-);
 
 router.get('/:transcriptId', async function(req, res, next) {
   try {
     var transcript = await msl.fetch_transcript(req.params.transcriptId);
   } catch (e) {
-    const rendered = nunjucks.render('error.njk');
-    const reactObject = await html(rendered.replace(/(\r?\n|\r)\s*/g, ''));
-    const svg = await satori(reactObject, {
-      width: 400,
-      height: 200,
-      fonts: [
-        {
-          name: 'Open Sans',
-          data: fontData,
-          style: 'normal'
-        }
-      ]
-    });
+    const svg = await ogGenerator(res, 'error');
     res.setHeader('Content-Type', 'image/svg+xml');
     return res.send(svg);
   }
@@ -46,19 +24,7 @@ router.get('/:transcriptId', async function(req, res, next) {
     'totalTrainingMinutes': transcript['totalTrainingMinutes'] || 0,
     'latestModules': latestModules,
   }
-  const rendered = env.render('transcript.njk', data);
-  const reactObject = await html(rendered.replace(/(\r?\n|\r)\s*/g, ''));
-  const svg = await satori(reactObject, {
-    width: 1200,
-    height: 630,
-    fonts: [
-      {
-        name: 'Open Sans',
-        data: fontData,
-        style: 'normal'
-      }
-    ]
-  });
+  const svg = await ogGenerator(res, 'transcript', data);
   res.setHeader('Content-Type', 'image/svg+xml');
   res.send(svg);
 });
