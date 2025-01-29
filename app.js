@@ -1,10 +1,16 @@
+require('dotenv').config();
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
 var nunjucks = require('nunjucks');
 var ogGenerator = require('./services/og-generator');
+var winston = require('./services/winston-logger');
+var morgan = require('morgan');
+
+const httpLogger = winston.loggers.get('http-service');
+const appLogger = winston.loggers.get('app-service');
 
 var transcriptRouter = require('./routes/transcript');
 var healthRouter = require('./routes/health');
@@ -19,11 +25,33 @@ nunjucks.configure('views', {
 });
 app.set('view engine', 'njk');
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+/**
+ * Middleware for HTTP logging
+ */
+// requests
+app.use(morgan(
+  'REQ :remote-addr :method :url HTTP/:http-version :user-agent',
+  {
+    immediate: true,
+    stream: {
+      write: (message) => httpLogger.http(message.trim()),
+    },
+  }
+));
+// responses
+app.use(morgan(
+  'RES :remote-addr :method :url :status :res[content-length] - :response-time ms',
+  {
+    stream: {
+      write: (message) => httpLogger.http(message.trim()),
+    },
+  }
+));
 
 app.use('/transcript', transcriptRouter);
 app.use('/health', healthRouter);
@@ -38,6 +66,7 @@ app.use(async function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+  appLogger.error(err);
 
   // render the error page
   const svg = await ogGenerator(res, 'error');

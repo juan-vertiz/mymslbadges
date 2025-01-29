@@ -1,4 +1,7 @@
 const axios = require('axios');
+const winston = require('../services/winston-logger');
+
+const logger = winston.loggers.get('app-service');
 
 module.exports = class LearnAPI {
     constructor() {
@@ -7,6 +10,7 @@ module.exports = class LearnAPI {
 
     async fetch_transcript(transcript_id, locale='en-us', isModuleAssessment=true) {
         try {
+            logger.info(`Fetching transcript "${transcript_id}"`);
             const response = await axios.get(`${this.baseUrl}/profiles/transcript/share/${transcript_id}`, {
                 params: {
                     'locale': locale,
@@ -15,13 +19,14 @@ module.exports = class LearnAPI {
             });
             return response.data;
         } catch (error) {
-            console.error(`${error.message} | transcript_id = ${transcript_id}`);
+            logger.error(error);
             throw error;
         }
     }
 
     async fetch_module(module_uid, locale='en-us') {
         try {
+            logger.info(`Fetching module "${module_uid}"`);
             const response = await axios.get(`${this.baseUrl}/hierarchy/modules/${module_uid}`, {
                 params: {
                     'locale': locale,
@@ -29,7 +34,7 @@ module.exports = class LearnAPI {
             });
             return response.data;
         } catch (error) {
-            console.error(`${error.message} | module_uid = ${module_uid}`);
+            logger.error(error);
             throw error;
         }
     }

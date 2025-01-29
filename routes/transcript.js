@@ -15,8 +15,12 @@ router.get('/:transcriptId', async function(req, res, next) {
   }
   var latestModules = transcript['modulesCompleted'].slice(0, 6);
   for (const completedModule of latestModules) {
-    const module = await msl.fetch_module(completedModule['uid']);
-    completedModule['base64Icon'] = `https://learn.microsoft.com${ module['iconUrl'] || '/en-us/training/achievements/generic-badge.svg' }`;
+    try {
+      const module = await msl.fetch_module(completedModule['uid']);
+      completedModule['base64Icon'] = `https://learn.microsoft.com${ module['iconUrl'] }`;
+    } catch (e) {
+      completedModule['base64Icon'] = 'https://learn.microsoft.com/en-us/training/achievements/generic-badge.svg';
+    }
   }
   const data = {
     'userName': transcript['userName'] || 'Unknown user',
