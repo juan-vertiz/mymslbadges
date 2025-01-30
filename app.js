@@ -21,7 +21,6 @@ var app = express();
 nunjucks.configure('views', {
   autoescape: true,
   express: app,
-  noCache: true,
 });
 app.set('view engine', 'njk');
 
