@@ -2,7 +2,7 @@ const path = require('path');
 const satori = require('satori').default;
 const fs = require('fs');
 const html = (...args) => import('satori-html').then(({ html }) => html(...args));
-const winston = require('../services/winston-logger');
+const winston = require('./LoggerService');
 
 const logger = winston.loggers.get('app-service');
 

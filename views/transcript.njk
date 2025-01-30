@@ -8,7 +8,7 @@
     <div style="display: flex; width: 100%; flex-flow: row wrap; justify-content: flex-start; align-items: center; gap: 16px;">
         {% for module in latestModules %}
         <div style="display: flex; flex: 0 0 45%; gap: 16px; align-items: center;">
-            <img src="{{ module.base64Icon }}" width="96px" height="96px">
+            <img src="{{ module.icon }}" width="96px" height="96px">
             <div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; text-wrap-style: balance; max-width: 80%;">
                 <p style="margin: 0; font-size: 28px;">{{ module.title }}</p>
                 <p style="margin: 0; font-size: 24px; color: #cbd5e1">Duration: {{ (module.durationInMinutes // 60) }} hr {{ (module.durationInMinutes % 60) }} min</p>

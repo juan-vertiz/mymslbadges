@@ -1,36 +1,21 @@
 const express = require('express');
-const LearnAPI = require('../services/learn');
-const ogGenerator = require('../services/og-generator');
+const {
+  fetchTranscript,
+  generateErrorSvg,
+  generateTranscriptSvg,
+} = require('../services/TranscriptService');
 
 const router = express.Router();
-const msl = new LearnAPI();
 
 router.get('/:transcriptId', async function(req, res, next) {
+  let transcript;
   try {
-    var transcript = await msl.fetch_transcript(req.params.transcriptId);
-  } catch (e) {
-    const svg = await ogGenerator(res, 'error');
-    res.setHeader('Content-Type', 'image/svg+xml');
-    return res.send(svg);
+    transcript = await fetchTranscript(req.params.transcriptId);
+  } catch (error) {
+    return generateErrorSvg(res);
   }
-  var latestModules = transcript['modulesCompleted'].slice(0, 6);
-  for (const completedModule of latestModules) {
-    try {
-      const module = await msl.fetch_module(completedModule['uid']);
-      completedModule['base64Icon'] = `https://learn.microsoft.com${ module['iconUrl'] }`;
-    } catch (e) {
-      completedModule['base64Icon'] = 'https://learn.microsoft.com/en-us/training/achievements/generic-badge.svg';
-    }
-  }
-  const data = {
-    'userName': transcript['userName'] || 'Unknown user',
-    'totalModulesCompleted': transcript['totalModulesCompleted'] || 0,
-    'totalTrainingMinutes': transcript['totalTrainingMinutes'] || 0,
-    'latestModules': latestModules,
-  }
-  const svg = await ogGenerator(res, 'transcript', data);
-  res.setHeader('Content-Type', 'image/svg+xml');
-  res.send(svg);
+
+  await generateTranscriptSvg(res, transcript);
 });
 
 module.exports = router;

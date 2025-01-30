@@ -1,14 +1,14 @@
 const axios = require('axios');
-const winston = require('../services/winston-logger');
+const winston = require('./LoggerService');
 
 const logger = winston.loggers.get('app-service');
 
-module.exports = class LearnAPI {
+class LearnAPI {
     constructor() {
         this.baseUrl = 'https://learn.microsoft.com/api';
     }
 
-    async fetch_transcript(transcript_id, locale='en-us', isModuleAssessment=true) {
+    async fetchTranscript(transcript_id, locale='en-us', isModuleAssessment=true) {
         try {
             logger.info(`Fetching transcript "${transcript_id}"`);
             const response = await axios.get(`${this.baseUrl}/profiles/transcript/share/${transcript_id}`, {
@@ -24,7 +24,7 @@ module.exports = class LearnAPI {
         }
     }
 
-    async fetch_module(module_uid, locale='en-us') {
+    async fetchModule(module_uid, locale='en-us') {
         try {
             logger.info(`Fetching module "${module_uid}"`);
             const response = await axios.get(`${this.baseUrl}/hierarchy/modules/${module_uid}`, {
@@ -39,3 +39,5 @@ module.exports = class LearnAPI {
         }
     }
 }
+
+module.exports = LearnAPI;

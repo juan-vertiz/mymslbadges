@@ -5,8 +5,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var nunjucks = require('nunjucks');
-var ogGenerator = require('./services/og-generator');
-var winston = require('./services/winston-logger');
+var ogGenerator = require('./services/OgGeneratorUtility');
+var winston = require('./services/LoggerService');
 var morgan = require('morgan');
 
 const httpLogger = winston.loggers.get('http-service');
