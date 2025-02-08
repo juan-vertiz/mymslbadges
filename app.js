@@ -1,17 +1,18 @@
+require('dotenv').config();
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
 var nunjucks = require('nunjucks');
-const satori = require('satori').default;
-const fs = require('fs');
-const html = (...args) => import('satori-html').then(({ html }) => html(...args));
+var ogGenerator = require('./services/OgGeneratorUtility');
+var winston = require('./services/LoggerService');
+var morgan = require('morgan');
 
-const fontData = fs.readFileSync(
-  path.join(__dirname, 'assets', 'fonts', 'OpenSans-Regular.ttf')
-);
+const httpLogger = winston.loggers.get('http-service');
+const appLogger = winston.loggers.get('app-service');
 
+var indexRouter = require('./routes/index');
 var transcriptRouter = require('./routes/transcript');
 var healthRouter = require('./routes/health');
 
@@ -21,16 +22,41 @@ var app = express();
 nunjucks.configure('views', {
   autoescape: true,
   express: app,
-  noCache: true,
 });
 app.set('view engine', 'njk');
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// trust proxy
+app.set('trust proxy', true);
+
+/**
+ * Middleware for HTTP logging
+ */
+// requests
+app.use(morgan(
+  'REQ :remote-addr :method :url HTTP/:http-version :user-agent',
+  {
+    immediate: true,
+    stream: {
+      write: (message) => httpLogger.http(message.trim()),
+    },
+  }
+));
+// responses
+app.use(morgan(
+  'RES :remote-addr :method :url :status :res[content-length] - :response-time ms',
+  {
+    stream: {
+      write: (message) => httpLogger.http(message.trim()),
+    },
+  }
+));
+
+app.use('/', indexRouter);
 app.use('/transcript', transcriptRouter);
 app.use('/health', healthRouter);
 
@@ -44,21 +70,10 @@ app.use(async function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+  appLogger.error(err);
 
   // render the error page
-  const rendered = nunjucks.render('error.njk');
-  const reactObject = await html(rendered.replace(/(\r?\n|\r)\s*/g, ''));
-  const svg = await satori(reactObject, {
-    width: 400,
-    height: 200,
-    fonts: [
-      {
-        name: 'Open Sans',
-        data: fontData,
-        style: 'normal'
-      }
-    ]
-  });
+  const svg = await ogGenerator(res, 'error');
   res.setHeader('Content-Type', 'image/svg+xml');
   res.send(svg);
 });
