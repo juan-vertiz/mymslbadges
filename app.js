@@ -12,6 +12,7 @@ var morgan = require('morgan');
 const httpLogger = winston.loggers.get('http-service');
 const appLogger = winston.loggers.get('app-service');
 
+var indexRouter = require('./routes/index');
 var transcriptRouter = require('./routes/transcript');
 var healthRouter = require('./routes/health');
 
@@ -28,6 +29,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// trust proxy
+app.set('trust proxy', true);
 
 /**
  * Middleware for HTTP logging
@@ -52,6 +56,7 @@ app.use(morgan(
   }
 ));
 
+app.use('/', indexRouter);
 app.use('/transcript', transcriptRouter);
 app.use('/health', healthRouter);
 
